@@ -9,6 +9,10 @@ export const defaultPricing: ModelPricingRow[] = [
   { id: "8", model: "Gemini", version: "3.1", tier: "Flash", inputCostPerToken: 0.000007, outputCostPerToken: 0.00002, effectiveDate: "2026-03-01" },
 ];
 
+export const tableHeaders = ["Model", "Version", "Tier", "Input Cost/Token", "Output Cost/Token", "Effective Date"];
+
+export const tiers = ["Pro", "Flash", "Lite"];
+
 export interface ModelPricingRow {
   id: string;
   model: string;

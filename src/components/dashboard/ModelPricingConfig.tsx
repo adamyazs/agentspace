@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Pencil, Check, X, Plus, Trash2 } from "lucide-react";
-import { defaultPricing, ModelPricingRow } from "@/const/modelPricingConst";
+import { defaultPricing, ModelPricingRow, tableHeaders, tiers } from "@/const/modelPricingConst";
 import { fetchModelPricing } from "@/api/apiService/modelPricing/modelPricing";
 
 export default function ModelPricingConfig() {
@@ -11,8 +11,6 @@ export default function ModelPricingConfig() {
   const [newRow, setNewRow] = useState<Omit<ModelPricingRow, "id">>({
     model: "", version: "", tier: "Pro", inputCostPerToken: 0, outputCostPerToken: 0, effectiveDate: "",
   });
-  const tableHeaders = ["Model", "Version", "Tier", "Input Cost/Token", "Output Cost/Token", "Effective Date"];
-  const tiers = ["Pro", "Flash", "Lite"];
 
   useEffect(() => {
     const fetchModelPricingData = async () => {
@@ -109,8 +107,8 @@ export default function ModelPricingConfig() {
                         </select>
                       ) : (
                         <span className={`inline-block text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-sm ${r.tier === "Pro" ? "bg-primary/10 text-primary" :
-                            r.tier === "Flash" ? "bg-[hsl(38,90%,94%)] text-[hsl(38,90%,30%)]" :
-                              "bg-muted text-muted-foreground"
+                          r.tier === "Flash" ? "bg-[hsl(38,90%,94%)] text-[hsl(38,90%,30%)]" :
+                            "bg-muted text-muted-foreground"
                           }`}>{r.tier}</span>
                       )}
                     </td>
