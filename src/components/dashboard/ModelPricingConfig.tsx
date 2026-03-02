@@ -18,7 +18,6 @@ export default function ModelPricingConfig() {
       setRows(data);
     }
     fetchModelPricingData().catch(console.error);
-    console.log("Current pricing configuration:", rows);
   }, [rows]);
 
   const startEdit = (row: ModelPricingRow) => {
