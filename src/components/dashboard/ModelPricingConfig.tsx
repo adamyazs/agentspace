@@ -1,26 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Pencil, Check, X, Plus, Trash2 } from "lucide-react";
-
-export interface ModelPricingRow {
-  id: string;
-  model: string;
-  version: string;
-  tier: string;
-  inputCostPerToken: number;
-  outputCostPerToken: number;
-  effectiveDate: string;
-}
-
-const defaultPricing: ModelPricingRow[] = [
-  { id: "1", model: "Gemini", version: "2.0", tier: "Pro", inputCostPerToken: 0.00001, outputCostPerToken: 0.00003, effectiveDate: "2026-01-15" },
-  { id: "2", model: "Gemini", version: "2.0", tier: "Flash", inputCostPerToken: 0.000005, outputCostPerToken: 0.000015, effectiveDate: "2026-01-15" },
-  { id: "3", model: "Gemini", version: "2.0", tier: "Lite", inputCostPerToken: 0.000002, outputCostPerToken: 0.000006, effectiveDate: "2026-01-15" },
-  { id: "4", model: "Gemini", version: "2.5", tier: "Pro", inputCostPerToken: 0.000012, outputCostPerToken: 0.000035, effectiveDate: "2026-02-01" },
-  { id: "5", model: "Gemini", version: "2.5", tier: "Flash", inputCostPerToken: 0.000006, outputCostPerToken: 0.000018, effectiveDate: "2026-02-01" },
-  { id: "6", model: "Gemini", version: "2.5", tier: "Lite", inputCostPerToken: 0.0000025, outputCostPerToken: 0.000007, effectiveDate: "2026-02-01" },
-  { id: "7", model: "Gemini", version: "3.1", tier: "Pro", inputCostPerToken: 0.000015, outputCostPerToken: 0.00004, effectiveDate: "2026-03-01" },
-  { id: "8", model: "Gemini", version: "3.1", tier: "Flash", inputCostPerToken: 0.000007, outputCostPerToken: 0.00002, effectiveDate: "2026-03-01" },
-];
+import { defaultPricing, ModelPricingRow } from "@/const/modelPricingConst";
+import { fetchModelPricing } from "@/api/apiService/modelPricing/modelPricing";
 
 export default function ModelPricingConfig() {
   const [rows, setRows] = useState<ModelPricingRow[]>(defaultPricing);
@@ -30,6 +11,17 @@ export default function ModelPricingConfig() {
   const [newRow, setNewRow] = useState<Omit<ModelPricingRow, "id">>({
     model: "", version: "", tier: "Pro", inputCostPerToken: 0, outputCostPerToken: 0, effectiveDate: "",
   });
+  const tableHeaders = ["Model", "Version", "Tier", "Input Cost/Token", "Output Cost/Token", "Effective Date"];
+  const tiers = ["Pro", "Flash", "Lite"];
+
+  useEffect(() => {
+    const fetchModelPricingData = async () => {
+      const data = await fetchModelPricing();
+      setRows(data);
+    }
+    fetchModelPricingData().catch(console.error);
+    console.log("Current pricing configuration:", rows);
+  }, [rows]);
 
   const startEdit = (row: ModelPricingRow) => {
     setEditingId(row.id);
@@ -69,13 +61,13 @@ export default function ModelPricingConfig() {
             Manage cost-per-token rates for each model, version, and tier. Changes apply to all dashboard cost calculations.
           </p>
         </div>
-        <button
+        {/* <button
           onClick={() => setAddingNew(true)}
           className="flex items-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-sm bg-primary text-primary-foreground hover:opacity-90 transition-opacity"
         >
           <Plus size={13} />
           Add Model
-        </button>
+        </button> */}
       </div>
 
       <div className="bg-card border border-border rounded-sm overflow-hidden">
@@ -83,7 +75,7 @@ export default function ModelPricingConfig() {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-border bg-muted/50">
-                {["Model", "Version", "Tier", "Input Cost / Token", "Output Cost / Token", "Effective Date", "Actions"].map((h) => (
+                {tableHeaders.map((h) => (
                   <th key={h} className="px-4 py-2.5 text-left text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
                     {h}
                   </th>
@@ -113,14 +105,13 @@ export default function ModelPricingConfig() {
                     <td className="px-4 py-2.5">
                       {isEditing ? (
                         <select className={inputClass} value={r.tier} onChange={(e) => setEditRow({ ...r, tier: e.target.value })}>
-                          {["Pro", "Flash", "Lite"].map((t) => <option key={t}>{t}</option>)}
+                          {tiers.map((t) => <option key={t}>{t}</option>)}
                         </select>
                       ) : (
-                        <span className={`inline-block text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-sm ${
-                          r.tier === "Pro" ? "bg-primary/10 text-primary" :
-                          r.tier === "Flash" ? "bg-[hsl(38,90%,94%)] text-[hsl(38,90%,30%)]" :
-                          "bg-muted text-muted-foreground"
-                        }`}>{r.tier}</span>
+                        <span className={`inline-block text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-sm ${r.tier === "Pro" ? "bg-primary/10 text-primary" :
+                            r.tier === "Flash" ? "bg-[hsl(38,90%,94%)] text-[hsl(38,90%,30%)]" :
+                              "bg-muted text-muted-foreground"
+                          }`}>{r.tier}</span>
                       )}
                     </td>
                     <td className="px-4 py-2.5">
@@ -147,7 +138,7 @@ export default function ModelPricingConfig() {
                         <span className="text-xs text-muted-foreground">{r.effectiveDate}</span>
                       )}
                     </td>
-                    <td className="px-4 py-2.5">
+                    {/* <td className="px-4 py-2.5">
                       {isEditing ? (
                         <div className="flex items-center gap-1">
                           <button onClick={saveEdit} className="p-1.5 rounded-sm hover:bg-[hsl(var(--status-healthy-bg))] text-[hsl(var(--status-healthy))] transition-colors">
@@ -167,7 +158,7 @@ export default function ModelPricingConfig() {
                           </button>
                         </div>
                       )}
-                    </td>
+                    </td> */}
                   </tr>
                 );
               })}
@@ -179,7 +170,7 @@ export default function ModelPricingConfig() {
                   <td className="px-4 py-2.5"><input className={inputClass} placeholder="e.g. 3.1" value={newRow.version} onChange={(e) => setNewRow({ ...newRow, version: e.target.value })} /></td>
                   <td className="px-4 py-2.5">
                     <select className={inputClass} value={newRow.tier} onChange={(e) => setNewRow({ ...newRow, tier: e.target.value })}>
-                      {["Pro", "Flash", "Lite"].map((t) => <option key={t}>{t}</option>)}
+                      {tiers.map((t) => <option key={t}>{t}</option>)}
                     </select>
                   </td>
                   <td className="px-4 py-2.5"><input className={inputClass} type="number" step="0.0000001" placeholder="0.0000100" value={newRow.inputCostPerToken || ""} onChange={(e) => setNewRow({ ...newRow, inputCostPerToken: parseFloat(e.target.value) || 0 })} /></td>
