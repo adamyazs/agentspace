@@ -7,8 +7,8 @@ import RuntimeDistributionPanel from "@/components/dashboard/RuntimeDistribution
 import AgentTable from "@/components/dashboard/AgentTable";
 import DocumentationPage from "@/components/dashboard/DocumentationPage";
 import ModelPricingConfig from "@/components/dashboard/ModelPricingConfig";
-import { getDashboardData } from "@/data/mockData";
-import type { Environment, ModelName, Runtime, TimeRange } from "@/data/mockData";
+import { getDashboardData } from "@/const/observabilityConst";
+import type { Environment, AgentName, ModelName, Runtime, TimeRange, ActiveTab } from "@/const/navBar";
 
 const SectionLabel = ({ children }: { children: React.ReactNode }) => (
   <div className="flex items-center gap-3 mb-3">
@@ -21,10 +21,11 @@ const SectionLabel = ({ children }: { children: React.ReactNode }) => (
 
 export default function Index() {
   const [environment, setEnvironment] = useState<Environment>("Prod");
+  const [agentName, setAgentName] = useState<AgentName>("Gemini 2.0");
   const [selectedModels, setSelectedModels] = useState<ModelName[]>([]);
   const [selectedRuntimes, setSelectedRuntimes] = useState<Runtime[]>([]);
   const [timeRange, setTimeRange] = useState<TimeRange>("24h");
-  const [activeTab, setActiveTab] = useState<"dashboard" | "docs" | "pricing">("dashboard");
+  const [activeTab, setActiveTab] = useState<ActiveTab>("dashboard");
 
   const data = useMemo(
     () => getDashboardData(environment, selectedModels, selectedRuntimes, timeRange),
@@ -36,6 +37,8 @@ export default function Index() {
       <DashboardHeader
         environment={environment}
         setEnvironment={setEnvironment}
+        agentName={agentName}
+        setAgentName={setAgentName}
         selectedModels={selectedModels}
         setSelectedModels={setSelectedModels}
         selectedRuntimes={selectedRuntimes}
@@ -63,12 +66,12 @@ export default function Index() {
                 <span className="text-muted-foreground">Last updated: {new Date().toLocaleTimeString()}</span>
               </p>
             </div>
-            <div className="flex items-center gap-2">
+            {/* <div className="flex items-center gap-2">
               <span className="flex items-center gap-1.5 text-[11px] font-semibold text-status-healthy">
                 <span className="w-1.5 h-1.5 rounded-full bg-status-healthy animate-pulse" />
                 All systems operational
               </span>
-            </div>
+            </div> */}
           </div>
 
           <section>
