@@ -2,9 +2,9 @@
 import axios from 'axios';
 
 const apiClient = axios.create({
-    baseURL: 'https://www.google.com/', // Replace with your API base URL
+    baseURL: 'https://www.google.com/',
     headers: {
-        'Content-Type': 'application/json' // Optional: sets common headers
+        'Content-Type': 'application/json'
     }
 });
 
