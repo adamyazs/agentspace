@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import type { AgentRow, AgentStatus } from "@/data/mockData";
-import { AGENT_ROW_DATA, AGENT_ROW_COLUMNS } from "@/const/agentInventoryDashboardConst";
-import PopupModalProps from "./PopupModal";
+import { AGENT_ROW_DATA, AGENT_ROW_COLUMNS, PAGE_SIZE } from "@/const/dashboard/agentInventoryDashboardConst";
+import PopupModalProps from "@/components/dashboard/AgentInventory/PopupModal";
+import { fetchAgentData } from "@/api/apiService/dashboard/agentData";
 
-const PAGE_SIZE = 6;
 
 const StatusBadge = ({ status }: { status: AgentRow["status"] }) => {
   const cls =
@@ -27,14 +27,19 @@ const rowClass = (status: AgentRow["status"]) =>
       ? "row-warning"
       : "row-critical";
 
-export default function AgentTable({ data }: { data: AgentRow[] }) {
+export default function AgentTable() {
   const [page, setPage] = useState(1);
-  const totalPages = Math.ceil(AGENT_ROW_DATA.length / PAGE_SIZE);
-  const paged = AGENT_ROW_DATA.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+  const [totalPages, setTotalPages] = useState<number>();
+  const [tableData, setTableData] = useState<AgentRow[]>([]);
 
   useEffect(() => {
-    console.log(paged, data)
-  }, [paged, data]);
+    const fetchAgentDataAsync = async () => {
+      const data = await fetchAgentData();
+      setTableData(data as AgentRow[]);
+      setTotalPages(Math.ceil(data.length / PAGE_SIZE));
+    }
+    fetchAgentDataAsync().catch(console.error);
+  }, []);
 
   return (
     <div className="bg-card border border-border rounded-sm">
@@ -43,7 +48,7 @@ export default function AgentTable({ data }: { data: AgentRow[] }) {
           Agent Inventory
         </h3>
         <span className="text-[11px] text-muted-foreground">
-          {AGENT_ROW_DATA.length} agents total
+          {tableData.length} agents total
         </span>
       </div>
 
@@ -61,13 +66,13 @@ export default function AgentTable({ data }: { data: AgentRow[] }) {
             </tr>
           </thead>
           <tbody>
-            {paged.length === 0 ? (
+            {tableData.length === 0 ? (
               <tr>
                 <td colSpan={AGENT_ROW_COLUMNS.length} className="px-4 py-10 text-center text-muted-foreground text-sm">
                   No agents match the selected filters.
                 </td>
               </tr>
-            ) : paged.map((row) => (
+            ) : tableData.map((row) => (
               <tr
                 key={row.id}
                 className={`border-b border-border/60 hover:brightness-[0.97] cursor-pointer transition-colors ${rowClass(row.status)}`}

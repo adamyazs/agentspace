@@ -1,6 +1,7 @@
 import { Environment, ModelName } from "@/const/navBar";
 import { AgentStatus } from "@/const/observabilityConst";
 
+export const PAGE_SIZE = 6;
 // Define columns dynamically or pass as prop if needed
 export const AGENT_ROW_COLUMNS: AgentInventoryDashboardColumnData[] = [
     { title: "Agent Name", key: "agentName", type: "text", isEditable: false },
@@ -14,6 +15,13 @@ export const AGENT_ROW_COLUMNS: AgentInventoryDashboardColumnData[] = [
     { title: "Error Rate", key: "errorRate", type: "number", isEditable: false },
     { title: "Status", key: "status", type: "text", isEditable: false },
 ];
+
+export interface AgentInventoryDashboardColumnData {
+    title: string;
+    key: string;
+    type: "text" | "number";
+    isEditable: boolean;
+}
 
 export const AGENT_ROW_DATA: AgentRow[] = [
     {
@@ -121,13 +129,6 @@ export const AGENT_ROW_DATA: AgentRow[] = [
         status: "Critical"
     }
 ]
-
-export interface AgentInventoryDashboardColumnData {
-    title: string;
-    key: string;
-    type: "text" | "number";
-    isEditable: boolean;
-}
 
 export interface AgentRow {
     id: string;
