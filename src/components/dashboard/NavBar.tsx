@@ -1,18 +1,18 @@
 import FeedbackPanel from "@/components/dashboard/FeedbackPanel";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { DynamicIcon } from "@/components/ui/DynamicIcon";
-import { SelectField, MultiSelectField } from "@/components/ui/SelectField";
-import { AgentName, Environment, ModelName, Runtime, TimeRange, DashboardHeaderProps } from "@/const/navBar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/shared/avatar";
+import { DynamicIcon } from "@/components/shared/DynamicIcon";
+import { SelectField, MultiSelectField } from "@/components/shared/SelectField";
+import { AgentName, Environment, ModelName, Runtime, TimeRange, NavBarProps } from "@/const/navBar";
 import { HEADER_NAV_BAR, USER, ALL_ENVIRONMENTS, ALL_AGENT_NAMES, ALL_MODEL_NAMES, ALL_RUNTIMES, ALL_TIME_RANGES, SUB_BAR_SIDE_HEADER } from "@/const/navBar";
 
-export default function DashboardHeader({
+export default function NavBar({
   environment, setEnvironment,
   agentName, setAgentName,
   selectedModels, setSelectedModels,
   selectedRuntimes, setSelectedRuntimes,
   timeRange, setTimeRange,
   activeTab, setActiveTab,
-}: DashboardHeaderProps) {
+}: NavBarProps) {
 
   const subBarItems = [
     { label: "ENV", value: environment },

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { DynamicIcon } from "@/components/ui/DynamicIcon";
+import { DynamicIcon } from "@/components/shared/DynamicIcon";
 import { fetchDocumentationSections } from "@/api/apiService/documentationPage/documentationPage";
 import { DocumentationSectionRow } from "@/const/documentationPageConst";
 
@@ -28,9 +28,8 @@ export default function DocumentationPage() {
 
   return (
     <div className="max-w-3xl mx-auto px-6 py-10 space-y-8">
-
       {documentationSections.map(({ step, title, description, code, icon }) => <>
-        <div className="bg-card border border-border rounded-sm">
+        <div className="bg-card border border-border rounded-sm" key={step}>
           <div className="px-5 py-3 border-b border-border flex items-center gap-2" style={{ borderLeftWidth: 3, borderLeftColor: "hsl(5,100%,42%)" }}>
             <DynamicIcon iconName={icon} className="text-primary" />
             <h2 className="font-bold text-foreground text-sm">Step {step} — {title}</h2>

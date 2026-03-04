@@ -1,16 +1,16 @@
 import { useState } from "react";
 import { MessageSquare } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import { Badge } from "@/components/ui/badge";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { Button } from "@/components/shared/button";
+import { Textarea } from "@/components/shared/textarea";
+import { Badge } from "@/components/shared/badge";
+import { ScrollArea } from "@/components/shared/scroll-area";
 import {
   Sheet,
   SheetTrigger,
   SheetContent,
   SheetHeader,
   SheetTitle,
-} from "@/components/ui/sheet";
+} from "@/components/shared/sheet";
 
 type FeedbackStatus = "Under Review" | "Acknowledged" | "Resolved";
 
