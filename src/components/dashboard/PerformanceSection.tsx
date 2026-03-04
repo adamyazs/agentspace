@@ -1,18 +1,17 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
-  ResponsiveContainer, LineChart, Line, ReferenceLine,
+  ResponsiveContainer, LineChart, Line, ReferenceLine, TooltipProps
 } from "recharts";
-import type { LatencyPoint, ErrorRatePoint } from "@/data/mockData";
+import { LatencyPoint, ErrorRatePoint, LATENCY_DATA, LATENCY_COLORS, ERROR_THRESHOLD, LATENCY_NAMES } from "@/const/dashboard/performanceConst";
+import { fetchPerformanceData } from "@/api/apiService/dashboard/performanceData";
 
-type Percentile = "p50" | "p95";
-
-const CustomTooltip = ({ active, payload, label }: any) => {
+const CustomTooltip = ({ active, payload, label }: TooltipProps<number, string>) => {
   if (!active || !payload?.length) return null;
   return (
     <div className="bg-card border border-border rounded-sm px-3 py-2 shadow-md text-xs">
       <p className="font-semibold text-foreground mb-1">{label}</p>
-      {payload.map((p: any) => (
+      {payload.map((p) => (
         <p key={p.dataKey} style={{ color: p.color }} className="font-medium">
           {p.name}: {p.value}ms
         </p>
@@ -21,12 +20,12 @@ const CustomTooltip = ({ active, payload, label }: any) => {
   );
 };
 
-const ErrorTooltip = ({ active, payload, label }: any) => {
+const ErrorTooltip = ({ active, payload, label }: TooltipProps<number, string>) => {
   if (!active || !payload?.length) return null;
   return (
     <div className="bg-card border border-border rounded-sm px-3 py-2 shadow-md text-xs">
       <p className="font-semibold text-foreground mb-1">{label}</p>
-      {payload.map((p: any) => (
+      {payload.map((p) => (
         <p key={p.dataKey} style={{ color: p.color }} className="font-medium">
           Error Rate: {p.value}%
         </p>
@@ -35,22 +34,74 @@ const ErrorTooltip = ({ active, payload, label }: any) => {
   );
 };
 
-const ERROR_THRESHOLD = 3.0;
+export default function PerformanceSection() {
+  // latency states
+  const [latencyData, setLatencyData] = useState<LatencyPoint[]>(); // api_latency_data
+  const [filterLatency, setFilterLatency] = useState<string[]>([]); // extracted percentile keys for filter buttons
+  const [selectedFilterLatency, setSelectedFilterLatency] = useState<string>(); // selected percentile for display
+  const [keyTypes, setKeyTypes] = useState<string[]>([]); // latency type keys for dynamic bar generation
+  const [latencyGraphData, setLatencyGraphData] = useState([]); // transformed data for graph based on selected percentile
 
-export default function PerformanceSection({
-  latencyData,
-  errorRateData,
-}: {
-  latencyData: LatencyPoint[];
-  errorRateData: ErrorRatePoint[];
-}) {
-  const [percentile, setPercentile] = useState<Percentile>("p50");
+  const [errorRateData, setErrorRateData] = useState<ErrorRatePoint[]>();
+  const [isAboveThreshold, setIsAboveThreshold] = useState(false);
 
-  const modelKey = `modelLatency_${percentile}` as keyof LatencyPoint;
-  const totalKey = `totalLatency_${percentile}` as keyof LatencyPoint;
+  const PercentileData = (data: LatencyPoint[]) => {
+    const keys = new Set<string>();
 
-  const maxErrorRate = Math.max(...errorRateData.map((d) => d.errorRate));
-  const isAboveThreshold = maxErrorRate > ERROR_THRESHOLD;
+    data.forEach(element => {
+      Object.keys(element).forEach((key) => {
+        if (key !== "label") {
+          keys.add(key);
+        }
+      });
+    });
+
+    return Array.from(keys);
+  }
+
+  const extractMetricKeys = (data) => {
+    const keys = new Set<string>();
+    Object.keys(data).forEach((key) => {
+      keys.add(key);
+    });
+
+    return Array.from(keys);
+  }
+
+  const flattenLatencyData = (data, percentile) => {
+    return data.map(item => ({
+      label: item.label,
+      ...item[percentile]
+    }));
+  }
+
+  const onSelectedFilterLatencyChange = (data: LatencyPoint[], latencyKey: string) => {
+    setSelectedFilterLatency(latencyKey);
+    const newData = flattenLatencyData(data, latencyKey);
+    setLatencyGraphData(newData);
+  }
+
+  useEffect(() => {
+    const fetchPerformanceDataAsync = async () => {
+      const data = await fetchPerformanceData();
+
+      // latency data
+      setLatencyData(data.latencyData);
+      const percentileData = PercentileData(data.latencyData);
+      setFilterLatency(percentileData);
+      onSelectedFilterLatencyChange(data.latencyData,percentileData[0]);
+
+      const keyList = extractMetricKeys(data.latency_name);
+      setKeyTypes(keyList);
+
+      // error rate data
+      setErrorRateData(data.errorRateData);
+      const maxErrorRate = Math.max(...data.errorRateData.map((d) => d.errorRate));
+      const isAboveThreshold = maxErrorRate > data.errorThreshold;
+      setIsAboveThreshold(isAboveThreshold);
+    }
+    fetchPerformanceDataAsync().catch(console.error);
+  }, []);
 
   return (
     <div className="flex gap-3 flex-col lg:flex-row">
@@ -61,15 +112,14 @@ export default function PerformanceSection({
             Latency Breakdown
           </h3>
           <div className="flex gap-1">
-            {(["p50", "p95"] as Percentile[]).map((p) => (
+            {filterLatency.map((p, idx) => (
               <button
                 key={p}
-                onClick={() => setPercentile(p)}
-                className={`text-[11px] font-semibold px-2.5 py-1 rounded-sm uppercase transition-colors ${
-                  percentile === p
-                    ? "bg-primary text-primary-foreground"
-                    : "bg-secondary text-muted-foreground hover:text-foreground"
-                }`}
+                onClick={() => onSelectedFilterLatencyChange(latencyData, p)}
+                className={`text-[11px] font-semibold px-2.5 py-1 rounded-sm uppercase transition-colors ${selectedFilterLatency === p
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-secondary text-muted-foreground hover:text-foreground"
+                  }`}
               >
                 {p}
               </button>
@@ -78,15 +128,20 @@ export default function PerformanceSection({
         </div>
         {/* Legend */}
         <div className="flex gap-4 mb-3">
-          <span className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
-            <span className="w-3 h-0.5 bg-[hsl(0,68%,33%)] inline-block" /> Model Latency
-          </span>
-          <span className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
-            <span className="w-3 h-0.5 bg-[hsl(220,60%,50%)] inline-block" /> Total Latency
-          </span>
+          {LATENCY_COLORS[selectedFilterLatency] && keyTypes.length > 0 &&
+            keyTypes.map((key, idx) => (
+              <span key={idx} className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
+                <span className="w-3 h-0.5 inline-block"
+                  style={{
+                    backgroundColor: LATENCY_COLORS[selectedFilterLatency][`${key}_legends`]
+                  }}
+                /> {LATENCY_NAMES[key]}
+              </span>
+            ))}
         </div>
+
         <ResponsiveContainer width="100%" height={220}>
-          <BarChart data={latencyData} margin={{ top: 4, right: 8, left: -10, bottom: 0 }} barCategoryGap="30%">
+          <BarChart data={latencyGraphData} margin={{ top: 4, right: 8, left: -10, bottom: 0 }} barCategoryGap="30%">
             <CartesianGrid strokeDasharray="3 3" stroke="hsl(220 14% 90%)" vertical={false} />
             <XAxis
               dataKey="label"
@@ -101,8 +156,10 @@ export default function PerformanceSection({
               unit="ms"
             />
             <Tooltip content={<CustomTooltip />} />
-            <Bar dataKey={modelKey} name="Model Latency" fill="#D71600" radius={[2, 2, 0, 0]} />
-            <Bar dataKey={totalKey} name="Total Latency" fill="hsl(220, 60%, 50%)" radius={[2, 2, 0, 0]} />
+            {keyTypes.length > 0 &&
+              keyTypes.map((key) => (
+                <Bar key={key} dataKey={key} name={LATENCY_NAMES[key]} fill={LATENCY_COLORS[selectedFilterLatency][`${key}_chart`]} radius={[2, 2, 0, 0]} />
+              ))}
           </BarChart>
         </ResponsiveContainer>
       </div>
@@ -114,9 +171,8 @@ export default function PerformanceSection({
             Error Rate Trend
           </h3>
           <span
-            className={`text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-sm ${
-              isAboveThreshold ? "status-critical" : "status-healthy"
-            }`}
+            className={`text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-sm ${isAboveThreshold ? "status-critical" : "status-healthy"
+              }`}
           >
             {isAboveThreshold ? "⚠ Above Threshold" : "Within Threshold"}
           </span>
