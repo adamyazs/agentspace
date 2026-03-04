@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { RuntimeDistribution } from "@/const/dashboard/runTimeDistributionConst";
-import { fetchRuntimeData } from "@/api/apiService/dashboard/runtimedata";
+import { RuntimeDistribution } from "@/const/dashboard/runtimeDistributionConst";
+import { fetchRuntimeData } from "@/api/apiService/dashboard/runtimeData";
 
 export default function RuntimeDistributionPanel() {
   const [runtimeData, setRuntimeData] = useState<RuntimeDistribution[]>([]);
