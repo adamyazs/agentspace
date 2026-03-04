@@ -4,7 +4,7 @@ import { fetchRuntimeData } from "@/api/apiService/dashboard/runtimedata";
 
 export default function RuntimeDistributionPanel() {
   const [runtimeData, setRuntimeData] = useState<RuntimeDistribution[]>([]);
-  const [maxCount, setMaxCount] = useState(0);
+  const [maxCount, setMaxCount] = useState(1);
 
   useEffect(() => {
     const fetchRuntimeDataAsync = async () => {

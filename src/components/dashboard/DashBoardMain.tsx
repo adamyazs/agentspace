@@ -55,7 +55,7 @@ export default function DashboardMain({
             </section>
             <section>
                 <SectionLabel>Performance</SectionLabel>
-                <PerformanceSection latencyData={data.latency} errorRateData={data.errorRate} />
+                <PerformanceSection />
             </section>
             <section>
                 <SectionLabel>Runtime Distribution</SectionLabel>
