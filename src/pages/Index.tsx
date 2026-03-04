@@ -4,13 +4,13 @@ import DashboardMain from "@/components/dashboard/DashBoardMain";
 import NavBar from "@/components/dashboard/NavBar";
 import DocumentationPage from "@/components/docs/DocumentationPage";
 import ModelPricingConfig from "@/components/pricing/ModelPricingConfig";
-import type { Environment, AgentName, ModelName, Runtime, TimeRange, ActiveTab } from "@/const/navBar";
+import type { Environment, AgentName, ModelName, TimeRange, ActiveTab } from "@/const/navBar";
 
 export default function Index() {
   const [environment, setEnvironment] = useState<Environment>("Prod");
   const [agentName, setAgentName] = useState<AgentName>("Gemini 2.0");
   const [selectedModels, setSelectedModels] = useState<ModelName[]>([]);
-  const [selectedRuntimes, setSelectedRuntimes] = useState<Runtime[]>([]);
+  const [selectedRuntimes, setSelectedRuntimes] = useState<string[]>([]);
   const [timeRange, setTimeRange] = useState<TimeRange>("24h");
   const location = useLocation();
   const navigate = useNavigate();

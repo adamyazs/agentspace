@@ -1,5 +1,6 @@
 import { Environment, ModelName } from "@/const/navBar";
-import { AgentStatus } from "@/const/observabilityConst";
+
+export type AgentStatus = "Healthy" | "Warning" | "Critical";
 
 export const PAGE_SIZE = 6;
 // Define columns dynamically or pass as prop if needed

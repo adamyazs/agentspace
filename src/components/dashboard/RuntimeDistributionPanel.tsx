@@ -1,19 +1,19 @@
-import type { RuntimeDistribution } from "@/data/mockData";
+import { useEffect, useState } from "react";
+import { RuntimeDistribution } from "@/const/dashboard/runTimeDistributionConst";
+import { fetchRuntimeData } from "@/api/apiService/dashboard/runtimedata";
 
-const RUNTIME_COLORS: Record<string, string> = {
-  "Agent Engine": "#D71600",
-  "GKE": "hsl(220, 60%, 50%)",
-  "Cloud Run": "hsl(38, 90%, 44%)",
-  "Gemini Enterprise": "hsl(142, 60%, 36%)",
-  "Playground": "hsl(220, 14%, 60%)",
-};
+export default function RuntimeDistributionPanel() {
+  const [runtimeData, setRuntimeData] = useState<RuntimeDistribution[]>([]);
+  const [maxCount, setMaxCount] = useState(0);
 
-export default function RuntimeDistributionPanel({
-  data,
-}: {
-  data: RuntimeDistribution[];
-}) {
-  const maxCount = Math.max(...data.map((d) => d.count));
+  useEffect(() => {
+    const fetchRuntimeDataAsync = async () => {
+      const data = await fetchRuntimeData();
+      setRuntimeData(data as RuntimeDistribution[]);
+      setMaxCount(Math.max(...data.map((d) => d.count)));
+    }
+    fetchRuntimeDataAsync().catch(console.error);
+  }, []);
 
   return (
     <div className="bg-card border border-border rounded-sm p-5">
@@ -21,9 +21,9 @@ export default function RuntimeDistributionPanel({
         Runtime Distribution — Execution Volume
       </h3>
       <div className="flex flex-col gap-4">
-        {data.map((item) => {
+        {runtimeData.map((item) => {
           const barWidth = (item.count / maxCount) * 100;
-          const color = RUNTIME_COLORS[item.runtime] || "hsl(220, 14%, 60%)";
+          const color = item.color || "hsl(220, 14%, 60%)";
           return (
             <div key={item.runtime}>
               <div className="flex items-center justify-between mb-1.5">
@@ -53,8 +53,8 @@ export default function RuntimeDistributionPanel({
 
       {/* Donut-style legend summary */}
       <div className="mt-5 pt-4 border-t border-border flex gap-3 flex-wrap">
-        {data.map((item) => {
-          const color = RUNTIME_COLORS[item.runtime] || "hsl(220, 14%, 60%)";
+        {runtimeData.map((item) => {
+          const color = item.color || "hsl(220, 14%, 60%)";
           return (
             <div key={item.runtime} className="flex items-center gap-1.5">
               <span

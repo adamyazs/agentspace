@@ -31,7 +31,7 @@ export const ALL_MODEL_NAMES: ModelName[] = [
   "Azure OpenAI GPT-4", "Azure OpenAI GPT-5",
 ];
 
-export const ALL_RUNTIMES: Runtime[] = ["Agent Engine", "GKE"];
+export const ALL_RUNTIMES: string[] = ["Agent Engine", "GKE"];
 
 export const ALL_TIME_RANGES: TimeRange[] = ["3h", "24h", "1w", "1m", "Custom"];
 
@@ -46,8 +46,6 @@ export type ModelName =
   | "Gemini 2.5 Lite" | "Gemini 2.5 Flash" | "Gemini 2.5 Pro"
   | "Gemini 3.1 Lite" | "Gemini 3.1 Flash" | "Gemini 3.1 Pro"
   | "Azure OpenAI GPT-4" | "Azure OpenAI GPT-5";
-
-export type Runtime = "Agent Engine" | "GKE";
 
 export type TimeRange = "3h" | "24h" | "1w" | "1m" | "Custom";
 
@@ -66,8 +64,8 @@ export interface NavBarProps {
   setAgentName: (v: AgentName) => void;
   selectedModels: ModelName[];
   setSelectedModels: (v: ModelName[]) => void;
-  selectedRuntimes: Runtime[];
-  setSelectedRuntimes: (v: Runtime[]) => void;
+  selectedRuntimes: string[];
+  setSelectedRuntimes: (v: string[]) => void;
   timeRange: TimeRange;
   setTimeRange: (v: TimeRange) => void;
   activeTab: ActiveTab;

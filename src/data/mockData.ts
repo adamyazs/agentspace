@@ -41,7 +41,7 @@ export interface ErrorRatePoint {
 }
 
 export interface RuntimeDistribution {
-  runtime: Runtime;
+  runtime: string;
   count: number;
   percentage: number;
 }

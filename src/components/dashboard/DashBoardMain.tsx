@@ -1,10 +1,10 @@
-import type { Environment, ModelName, Runtime, TimeRange, ActiveTab } from "@/const/navBar";
 import { useMemo } from "react";
 import KPIStrip from "@/components/dashboard/KPIStrip";
 import UsageCostSection from "@/components/dashboard/UsageCostSection";
 import PerformanceSection from "@/components/dashboard/PerformanceSection";
 import RuntimeDistributionPanel from "@/components/dashboard/RuntimeDistributionPanel";
 import AgentTable from "@/components/dashboard/AgentInventory/AgentTable";
+import type { Environment, ModelName, TimeRange, ActiveTab } from "@/const/navBar";
 import { getDashboardData } from "@/const/observabilityConst";
 
 const SectionLabel = ({ children }: { children: React.ReactNode }) => (
@@ -16,7 +16,6 @@ const SectionLabel = ({ children }: { children: React.ReactNode }) => (
     </div>
 );
 
-
 export default function DashboardMain({
     environment,
     selectedModels,
@@ -25,7 +24,7 @@ export default function DashboardMain({
 }: {
     environment: Environment;
     selectedModels: ModelName[];
-    selectedRuntimes: Runtime[];
+    selectedRuntimes: string[];
     timeRange: TimeRange;
 }) {
     const data = useMemo(
@@ -60,7 +59,7 @@ export default function DashboardMain({
             </section>
             <section>
                 <SectionLabel>Runtime Distribution</SectionLabel>
-                <RuntimeDistributionPanel data={data.runtimeDist} />
+                <RuntimeDistributionPanel />
             </section>
             <section>
                 <SectionLabel>Agent Inventory</SectionLabel>

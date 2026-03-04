@@ -1,6 +1,5 @@
-import { ALL_RUNTIMES ,Environment, ModelName, Runtime, TimeRange } from "@/const/navBar";
-
-export type AgentStatus = "Healthy" | "Warning" | "Critical";
+import { ALL_RUNTIMES ,Environment, ModelName, TimeRange } from "@/const/navBar";
+import { AgentRow } from "@/const/dashboard/agentInventoryDashboardConst";
 
 export interface TimeSeriesPoint {
     time: string;
@@ -24,23 +23,11 @@ export interface ErrorRatePoint {
 }
 
 export interface RuntimeDistribution {
-    runtime: Runtime;
+    runtime: string;
     count: number;
     percentage: number;
 }
 
-export interface AgentRow {
-    id: string;
-    agentName: string;
-    environment: Environment;
-    runtime: Runtime;
-    modelName: ModelName;
-    totalTokens: number;
-    cost: number;
-    avgLatency: number;
-    errorRate: number;
-    status: AgentStatus;
-}
 
 export interface KPIs {
     totalCost: number;
@@ -139,9 +126,9 @@ function getKPIs(env: Environment, models: ModelName[], time: TimeRange): KPIs {
     };
 }
 
-function getRuntimeDistribution(env: Environment, runtimes: Runtime[]): RuntimeDistribution[] {
-    const base: Record<Runtime, number> = { "Agent Engine": 48420, "GKE": 31150 };
-    const envFactor: Record<Environment, Partial<Record<Runtime, number>>> = {
+function getRuntimeDistribution(env: Environment, runtimes: string[]): RuntimeDistribution[] {
+    const base: Record<string, number> = { "Agent Engine": 48420, "GKE": 31150 };
+    const envFactor: Record<Environment, Partial<Record<string, number>>> = {
         Prod: { "Agent Engine": 1.2 },
         QA: { "GKE": 0.8 },
         Dev: { "Agent Engine": 0.4 },
@@ -155,7 +142,7 @@ function getRuntimeDistribution(env: Environment, runtimes: Runtime[]): RuntimeD
     return raw.map((r) => ({ ...r, percentage: +(r.count / total * 100).toFixed(1) }));
 }
 
-function getLatencyData(models: ModelName[], runtimes: Runtime[]): LatencyPoint[] {
+function getLatencyData(models: ModelName[], runtimes: string[]): LatencyPoint[] {
     const avgFactor = models.length > 0
         ? models.reduce((s, m) => s + modelLatencyFactor[m], 0) / models.length
         : 1;
@@ -193,7 +180,7 @@ const allAgents: AgentRow[] = [
     { id: "15", agentName: "compliance-checker", environment: "Dev", runtime: "GKE", modelName: "Azure OpenAI GPT-5", totalTokens: 1200000, cost: 144, avgLatency: 480, errorRate: 1.4, status: "Healthy" },
 ];
 
-function getAgentTable(env: Environment, models: ModelName[], runtimes: Runtime[]): AgentRow[] {
+function getAgentTable(env: Environment, models: ModelName[], runtimes: string[]): AgentRow[] {
     return allAgents.filter((a) =>
         a.environment === env &&
         (models.length === 0 || models.includes(a.modelName)) &&
@@ -217,7 +204,7 @@ export interface DashboardData {
 export function getDashboardData(
     env: Environment,
     models: ModelName[],
-    runtimes: Runtime[],
+    runtimes: string[],
     time: TimeRange
 ): DashboardData {
     const labels = timeLabels[time];
