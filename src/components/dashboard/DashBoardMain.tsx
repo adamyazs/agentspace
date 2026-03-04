@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import KPIStrip from "@/components/dashboard/KPIStrip";
+import KPIStrip from "@/components/dashboard/execSummaryKPI/KPIStrip";
 import UsageCostSection from "@/components/dashboard/UsageCostSection";
 import PerformanceSection from "@/components/dashboard/performance/PerformanceSection";
 import RuntimeDistributionPanel from "@/components/dashboard/runtimeDistribution/RuntimeDistributionPanel";
