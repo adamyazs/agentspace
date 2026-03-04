@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import type { AgentRow, AgentStatus } from "@/data/mockData";
 import { AGENT_ROW_DATA, AGENT_ROW_COLUMNS, PAGE_SIZE } from "@/const/dashboard/agentInventoryDashboardConst";
-import PopupModalProps from "@/components/dashboard/AgentInventory/PopupModal";
+import PopupModalProps from "@/components/dashboard/agentInventory/PopupModal";
 import { fetchAgentData } from "@/api/apiService/dashboard/agentData";
 
 
