@@ -59,7 +59,7 @@ export interface KPIs {
 // ─── SCALE FACTORS ───────────────────────────────────────────────────────────
 
 const envScale: Record<Environment, number> = { Prod: 1.0, QA: 0.45, Dev: 0.18 };
-const timeScale: Record<TimeRange, number> = { "1h": 0.06, "24h": 1.0, "1w": 6.4, "1m": 26, Custom: 1.3 };
+const timeScale: Record<TimeRange, number> = { "3h": 0.06, "24h": 1.0, "1w": 6.4, "1m": 26, Custom: 1.3 };
 
 const modelScale: Record<ModelName, number> = {
     "Gemini 2.0 Lite": 0.05, "Gemini 2.0 Flash": 0.08, "Gemini 2.0 Pro": 0.12,
@@ -76,14 +76,14 @@ const modelLatencyFactor: Record<ModelName, number> = {
 };
 
 const timeLabels: Record<TimeRange, string[]> = {
-    "1h": ["00m", "05m", "10m", "15m", "20m", "25m", "30m", "35m", "40m", "45m", "50m", "55m", "60m"],
+    "3h": ["00m", "15m", "30m", "45m", "60m", "75m", "90m", "105m", "120m", "135m", "150m", "165m", "180m"],
     "24h": ["00:00", "02:00", "04:00", "06:00", "08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00", "22:00"],
     "1w": ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
     "1m": ["Week 1", "Week 2", "Week 3", "Week 4"],
     Custom: ["Period 1", "Period 2", "Period 3", "Period 4", "Period 5", "Period 6"],
 };
 
-const timeSpikeIdx: Record<TimeRange, number> = { "1h": 8, "24h": 7, "1w": 4, "1m": 2, Custom: 3 };
+const timeSpikeIdx: Record<TimeRange, number> = { "3h": 8, "24h": 7, "1w": 4, "1m": 2, Custom: 3 };
 
 // ─── DATA GENERATORS ─────────────────────────────────────────────────────────
 
@@ -131,11 +131,11 @@ function getKPIs(env: Environment, models: ModelName[], time: TimeRange): KPIs {
         avgLatency: Math.round(381 * (models.length > 0
             ? models.reduce((s, m) => s + modelLatencyFactor[m], 0) / models.length
             : 1)),
-        avgLatencyTrend: time === "1w" ? -5.1 : time === "1h" ? 1.2 : -3.2,
+        avgLatencyTrend: time === "1w" ? -5.1 : time === "3h" ? 1.2 : -3.2,
         errorRate: +(2.1 * (env === "Dev" ? 0.4 : env === "QA" ? 0.7 : 1.0)).toFixed(1),
         errorRateTrend: env === "Prod" ? 0.4 : -0.3,
         llmCalls: Math.round(2480000 * s),
-        llmCallsTrend: time === "1w" ? 22.3 : time === "1h" ? 3.1 : 15.7,
+        llmCallsTrend: time === "1w" ? 22.3 : time === "3h" ? 3.1 : 15.7,
     };
 }
 

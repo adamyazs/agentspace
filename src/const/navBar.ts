@@ -33,7 +33,7 @@ export const ALL_MODEL_NAMES: ModelName[] = [
 
 export const ALL_RUNTIMES: Runtime[] = ["Agent Engine", "GKE"];
 
-export const ALL_TIME_RANGES: TimeRange[] = ["1h", "24h", "1w", "1m", "Custom"];
+export const ALL_TIME_RANGES: TimeRange[] = ["3h", "24h", "1w", "1m", "Custom"];
 
 // all types for dashboard navBar and filters
 
@@ -49,7 +49,7 @@ export type ModelName =
 
 export type Runtime = "Agent Engine" | "GKE";
 
-export type TimeRange = "1h" | "24h" | "1w" | "1m" | "Custom";
+export type TimeRange = "3h" | "24h" | "1w" | "1m" | "Custom";
 
 // sub-bar related constants
 
@@ -59,7 +59,7 @@ export const SUB_BAR_SIDE_HEADER: string = "Agent Observability Dashboard";
 // all constants and types related to header component
 export type ActiveTab = "dashboard" | "docs" | "pricing";
 
-export interface DashboardHeaderProps {
+export interface NavBarProps {
   environment: Environment;
   setEnvironment: (v: Environment) => void;
   agentName: AgentName;
