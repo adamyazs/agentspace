@@ -1,5 +1,5 @@
 import apiClient from "@/api/apiClient";
-import { RUN_TIME_DATA, RuntimeDistribution } from "@/const/dashboard/runTimeDistributionConst";
+import { RUN_TIME_DATA, RuntimeDistribution } from "@/const/dashboard/runtimeDistributionConst";
 
 export const fetchRuntimeData = async (): Promise<RuntimeDistribution[]> => {
     if (
