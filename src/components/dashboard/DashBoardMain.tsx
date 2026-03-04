@@ -4,7 +4,7 @@ import UsageCostSection from "@/components/dashboard/UsageCostSection";
 import PerformanceSection from "@/components/dashboard/performance/PerformanceSection";
 import RuntimeDistributionPanel from "@/components/dashboard/runtimeDistribution/RuntimeDistributionPanel";
 import AgentTable from "@/components/dashboard/agentInventory/AgentTable";
-import type { Environment, ModelName, TimeRange, ActiveTab } from "@/const/navBar";
+import type { Environment, ModelName, TimeRange } from "@/const/navBar";
 import { getDashboardData } from "@/const/observabilityConst";
 
 const SectionLabel = ({ children }: { children: React.ReactNode }) => (
@@ -47,7 +47,7 @@ export default function DashboardMain({
             </div>
             <section>
                 <SectionLabel>Executive Summary</SectionLabel>
-                <KPIStrip kpis={data.kpis} />
+                <KPIStrip />
             </section>
             <section>
                 <SectionLabel>Usage &amp; Cost</SectionLabel>
