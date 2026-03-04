@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import KPIStrip from "@/components/dashboard/KPIStrip";
 import UsageCostSection from "@/components/dashboard/UsageCostSection";
-import PerformanceSection from "@/components/dashboard/PerformanceSection";
+import PerformanceSection from "@/components/dashboard/performance/PerformanceSection";
 import RuntimeDistributionPanel from "@/components/dashboard/RunTimeDistribution/RuntimeDistributionPanel";
 import AgentTable from "@/components/dashboard/AgentInventory/AgentTable";
 import type { Environment, ModelName, TimeRange, ActiveTab } from "@/const/navBar";
