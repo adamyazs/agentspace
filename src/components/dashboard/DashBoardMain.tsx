@@ -1,11 +1,11 @@
 import type { Environment, ModelName, Runtime, TimeRange, ActiveTab } from "@/const/navBar";
-import { getDashboardData } from "@/const/observabilityConst";
 import { useMemo } from "react";
 import KPIStrip from "@/components/dashboard/KPIStrip";
 import UsageCostSection from "@/components/dashboard/UsageCostSection";
 import PerformanceSection from "@/components/dashboard/PerformanceSection";
 import RuntimeDistributionPanel from "@/components/dashboard/RuntimeDistributionPanel";
 import AgentTable from "@/components/dashboard/AgentInventory/AgentTable";
+import { getDashboardData } from "@/const/observabilityConst";
 
 const SectionLabel = ({ children }: { children: React.ReactNode }) => (
     <div className="flex items-center gap-3 mb-3">
@@ -64,7 +64,7 @@ export default function DashboardMain({
             </section>
             <section>
                 <SectionLabel>Agent Inventory</SectionLabel>
-                <AgentTable data={data.agents} />
+                <AgentTable />
             </section>
         </main>
     );
