@@ -1,9 +1,8 @@
 import { useEffect, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import type { AgentRow, AgentStatus } from "@/data/mockData";
-import { AGENT_ROW_DATA, AGENT_ROW_COLUMNS, PAGE_SIZE } from "@/const/dashboard/agentInventoryDashboardConst";
 import PopupModalProps from "@/components/dashboard/agentInventory/PopupModal";
 import { fetchAgentData } from "@/api/apiService/dashboard/agentData";
+import { AGENT_ROW_COLUMNS, PAGE_SIZE, AgentRow, AgentStatus } from "@/const/dashboard/agentInventoryDashboardConst";
 
 
 const StatusBadge = ({ status }: { status: AgentRow["status"] }) => {
@@ -159,7 +158,7 @@ export default function AgentTable() {
       {/* Pagination */}
       <div className="px-5 py-3 flex items-center justify-between border-t border-border">
         <span className="text-[11px] text-muted-foreground">
-          Showing {(page - 1) * PAGE_SIZE + 1}–{Math.min(page * PAGE_SIZE, AGENT_ROW_DATA.length)} of {AGENT_ROW_DATA.length}
+          Showing {(page - 1) * PAGE_SIZE + 1}–{Math.min(page * PAGE_SIZE, tableData.length)} of {tableData.length}
         </span>
         <div className="flex items-center gap-2">
           <button

@@ -1,4 +1,4 @@
-import { Environment, ModelName } from "@/const/navBar";
+import { ModelName } from "@/const/navBar";
 
 export type AgentStatus = "Healthy" | "Warning" | "Critical";
 
@@ -7,7 +7,7 @@ export const PAGE_SIZE = 6;
 export const AGENT_ROW_COLUMNS: AgentInventoryDashboardColumnData[] = [
     { title: "Agent Name", key: "agentName", type: "text", isEditable: false },
     { title: "Description", key: "description", type: "text", isEditable: true },
-    { title: "Environment", key: "environment", type: "text", isEditable: false },
+    { title: "Owner", key: "owner", type: "text", isEditable: false },
     { title: "Runtime", key: "runtime", type: "text", isEditable: false },
     { title: "Model", key: "modelName", type: "text", isEditable: false },
     { title: "Total Tokens", key: "totalTokens", type: "number", isEditable: false },
@@ -29,7 +29,7 @@ export const AGENT_ROW_DATA: AgentRow[] = [
         id: "1",
         agentName: "content-synthesis-agent",
         description: "Synthesizes content from multiple sources to generate comprehensive reports.",
-        environment: "Prod",
+        owner: "Prod",
         runtime: "Agent Engine",
         modelName: "Gemini 2.5 Pro",
         totalTokens: 14200000,
@@ -42,7 +42,7 @@ export const AGENT_ROW_DATA: AgentRow[] = [
         id: "2",
         agentName: "customer-support-bot",
         description: "Handles customer inquiries and provides support through chat interactions.",
-        environment: "Prod",
+        owner: "Prod",
         runtime: "GKE",
         modelName: "Gemini 2.5 Flash",
         totalTokens: 9800000,
@@ -55,7 +55,7 @@ export const AGENT_ROW_DATA: AgentRow[] = [
         id: "3",
         agentName: "data-extraction-pipeline",
         description: "Extracts structured data from unstructured documents for analysis.",
-        environment: "Prod",
+        owner: "Prod",
         runtime: "Agent Engine",
         modelName: "Azure OpenAI GPT-4",
         totalTokens: 21500000,
@@ -68,7 +68,7 @@ export const AGENT_ROW_DATA: AgentRow[] = [
         id: "5",
         agentName: "fraud-detection-agent",
         description: "Analyzes transaction data in real-time to identify potential fraudulent activities.",
-        environment: "Prod",
+        owner: "Prod",
         runtime: "GKE",
         modelName: "Azure OpenAI GPT-5",
         totalTokens: 18900000,
@@ -81,7 +81,7 @@ export const AGENT_ROW_DATA: AgentRow[] = [
         id: "6",
         agentName: "invoice-processing-v2",
         description: "Processes and validates invoices using advanced NLP techniques.",
-        environment: "Prod",
+        owner: "Prod",
         runtime: "GKE",
         modelName: "Gemini 2.0 Flash",
         totalTokens: 7200000,
@@ -94,7 +94,7 @@ export const AGENT_ROW_DATA: AgentRow[] = [
         id: "9",
         agentName: "risk-assessment-agent",
         description: "Evaluates financial risk based on market data and historical trends.",
-        environment: "Prod",
+        owner: "Prod",
         runtime: "Agent Engine",
         modelName: "Gemini 2.5 Pro",
         totalTokens: 16700000,
@@ -107,7 +107,7 @@ export const AGENT_ROW_DATA: AgentRow[] = [
         id: "10",
         agentName: "semantic-search-engine",
         description: "Provides semantic search capabilities across large document repositories.",
-        environment: "Prod",
+        owner: "Prod",
         runtime: "GKE",
         modelName: "Gemini 3.1 Flash",
         totalTokens: 8300000,
@@ -120,7 +120,7 @@ export const AGENT_ROW_DATA: AgentRow[] = [
         id: "12",
         agentName: "translation-pipeline",
         description: "Translates content between multiple languages while preserving context and nuance.",
-        environment: "Prod",
+        owner: "Prod",
         runtime: "GKE",
         modelName: "Azure OpenAI GPT-4",
         totalTokens: 12600000,
@@ -135,7 +135,7 @@ export interface AgentRow {
     id: string;
     agentName: string;
     description?: string;
-    environment: Environment;
+    owner: string;
     runtime: string;
     modelName: ModelName;
     totalTokens: number;
