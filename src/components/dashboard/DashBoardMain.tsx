@@ -5,7 +5,6 @@ import PerformanceSection from "@/components/dashboard/performance/PerformanceSe
 import RuntimeDistributionPanel from "@/components/dashboard/runtimeDistribution/RuntimeDistributionPanel";
 import AgentTable from "@/components/dashboard/agentInventory/AgentTable";
 import type { Environment, ModelName, TimeRange } from "@/const/navBar";
-import { getDashboardData } from "@/const/observabilityConst";
 
 const SectionLabel = ({ children }: { children: React.ReactNode }) => (
     <div className="flex items-center gap-3 mb-3">

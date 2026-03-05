@@ -1,11 +1,13 @@
 // navBar related constants and types
 export const HEADER_NAV_BAR: NavBarItem[] = [
-  { key: "dashboard" as const, label: "Observability", iconKey: "Activity" },
-  { key: "docs" as const, label: "Documentation", iconKey: "FileText" },
-  { key: "pricing" as const, label: "Model Pricing", iconKey: "DollarSign" },
+  { key: "dashboard" as const, label: "Observability", iconKey: "Activity", roleAccess: ["super_user", "user"] },
+  { key: "docs" as const, label: "Documentation", iconKey: "FileText", roleAccess: ["super_user", "user"] },
+  { key: "pricing" as const, label: "Model Pricing", iconKey: "DollarSign", roleAccess: ["super_user"] },
 ]
 
-export const USER: UserProfile = { name: "John Doe", avatarUrl: "", role: "Admin" };
+export const USER: UserProfile = { name: "John Doe", avatarUrl: "", role: "super_user" };
+
+export const USER_ROLES : string[] = ["user", "super_user"] as const;
 
 interface UserProfile {
   name: string;
@@ -17,6 +19,7 @@ interface NavBarItem {
   key: "dashboard" | "docs" | "pricing";
   label: string;
   iconKey: string;
+  roleAccess?: string[]; // Optional: specify which roles can see this tab
 }
 
 // all dropdown constants
@@ -48,6 +51,9 @@ export type ModelName =
   | "Azure OpenAI GPT-4" | "Azure OpenAI GPT-5";
 
 export type TimeRange = "3h" | "24h" | "1w" | "1m" | "Custom";
+
+
+export type Runtime = "Agent Engine" | "GKE";
 
 // sub-bar related constants
 

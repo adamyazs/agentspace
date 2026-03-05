@@ -1,3 +1,29 @@
+export const DisabledSelectField = ({
+    label,
+    value,
+    options,
+}: {
+    label: string;
+    value: string;
+    options: string[];
+}) => (
+    <div className="flex flex-col gap-0.5">
+        <span className="text-[10px] font-semibold uppercase tracking-widest text-white/50">
+            {label}
+        </span>
+        <select
+            value={value}
+            disabled
+            className="bg-white/10 border border-white/20 text-white text-sm font-medium rounded-sm px-2.5 py-1.5 focus:outline-none min-w-[130px] opacity-60 cursor-not-allowed"
+        >
+            {options.map((o) => (
+                <option key={o} value={o} className="bg-[#8a0e00] text-white">
+                    {o}
+                </option>
+            ))}
+        </select>
+    </div>
+);
 import * as Icon from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 

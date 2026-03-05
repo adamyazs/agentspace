@@ -1,9 +1,10 @@
 import FeedbackPanel from "@/components/dashboard/FeedbackPanel";
+import { getUserRole } from "@/auth/auth";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/shared/avatar";
 import { DynamicIcon } from "@/components/shared/DynamicIcon";
-import { SelectField, MultiSelectField } from "@/components/shared/SelectField";
-import { AgentName, Environment, ModelName, Runtime, TimeRange, NavBarProps } from "@/const/navBar";
-import { HEADER_NAV_BAR, USER, ALL_ENVIRONMENTS, ALL_AGENT_NAMES, ALL_MODEL_NAMES, ALL_RUNTIMES, ALL_TIME_RANGES, SUB_BAR_SIDE_HEADER } from "@/const/navBar";
+import { SelectField, MultiSelectField, DisabledSelectField } from "@/components/shared/SelectField";
+import { HEADER_NAV_BAR, USER, ALL_ENVIRONMENTS, ALL_AGENT_NAMES, ALL_MODEL_NAMES, ALL_RUNTIMES, ALL_TIME_RANGES, SUB_BAR_SIDE_HEADER, AgentName, Environment, ModelName, Runtime, TimeRange, NavBarProps } from "@/const/navBar";
+import { useMemo } from "react";
 
 export default function NavBar({
   environment, setEnvironment,
@@ -13,6 +14,7 @@ export default function NavBar({
   timeRange, setTimeRange,
   activeTab, setActiveTab,
 }: NavBarProps) {
+  const userRole = useMemo(() => getUserRole(), []);
 
   const subBarItems = [
     { label: "ENV", value: environment },
@@ -42,7 +44,7 @@ export default function NavBar({
 
           <div className="flex justify-between">
             <nav className="flex gap-1">
-              {HEADER_NAV_BAR.map(({ key, label, iconKey }) => (
+              {HEADER_NAV_BAR.map(({ key, label, iconKey, roleAccess }) => roleAccess.includes(userRole) && (
                 <button
                   key={key}
                   onClick={() => setActiveTab(key)}
@@ -74,11 +76,10 @@ export default function NavBar({
         {/* Right: Filters (only shown on dashboard tab) */}
         {activeTab === "dashboard" && (
           <div className="px-6 pb-3 flex items-center gap-4 flex-wrap">
-            <SelectField
+            <DisabledSelectField
               label="Environment"
               value={environment}
               options={ALL_ENVIRONMENTS}
-              onChange={(v) => setEnvironment(v as Environment)}
             />
             <SelectField
               label="Agent Name"
