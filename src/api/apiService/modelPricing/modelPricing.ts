@@ -1,4 +1,4 @@
-import { defaultPricing, ModelPricingRow } from "@/const/modelPricingConst";
+import { DEFAULT_PRICING, ModelPricingRow } from "@/const/modelPricingConst";
 import apiClient from "@/api/apiClient";
 
 export const fetchModelPricing = async (): Promise<ModelPricingRow[]> => {
@@ -6,7 +6,7 @@ export const fetchModelPricing = async (): Promise<ModelPricingRow[]> => {
         typeof window !== "undefined" &&
         (window.location.hostname === "localhost")
     ) {
-        return defaultPricing;
+        return DEFAULT_PRICING;
     }
     try {
         const response = await apiClient.get("/api/model-pricing");

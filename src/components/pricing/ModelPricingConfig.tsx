@@ -1,15 +1,15 @@
 import { useEffect, useState } from "react";
 import { Pencil, Check, X, Plus, Trash2 } from "lucide-react";
-import { defaultPricing, ModelPricingRow, tableHeaders, tiers } from "@/const/modelPricingConst";
+import { DEFAULT_PRICING, ModelPricingRow, tableHeaders, tiers } from "@/const/modelPricingConst";
 import { fetchModelPricing } from "@/api/apiService/modelPricing/modelPricing";
 
 export default function ModelPricingConfig() {
-  const [rows, setRows] = useState<ModelPricingRow[]>(defaultPricing);
+  const [rows, setRows] = useState<ModelPricingRow[]>();
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editRow, setEditRow] = useState<ModelPricingRow | null>(null);
   const [addingNew, setAddingNew] = useState(false);
   const [newRow, setNewRow] = useState<Omit<ModelPricingRow, "id">>({
-    model: "", version: "", tier: "Pro", inputCostPerToken: 0, outputCostPerToken: 0, effectiveDate: "",
+    model: "", inputCostPerToken: 0, outputCostPerToken: 0, effectiveDate: "",
   });
 
   useEffect(() => {
@@ -41,9 +41,9 @@ export default function ModelPricingConfig() {
   };
 
   const addRow = () => {
-    if (!newRow.model || !newRow.version || !newRow.effectiveDate) return;
+    if (!newRow.model || !newRow.effectiveDate) return;
     setRows((prev) => [...prev, { ...newRow, id: crypto.randomUUID() }]);
-    setNewRow({ model: "", version: "", tier: "Pro", inputCostPerToken: 0, outputCostPerToken: 0, effectiveDate: "" });
+    setNewRow({ model: "", inputCostPerToken: 0, outputCostPerToken: 0, effectiveDate: "" });
     setAddingNew(false);
   };
 
@@ -55,7 +55,7 @@ export default function ModelPricingConfig() {
         <div>
           <h1 className="text-xl font-bold text-foreground tracking-tight">Model Pricing Configuration</h1>
           <p className="text-xs text-muted-foreground mt-0.5">
-            Manage cost-per-token rates for each model, version, and tier. Changes apply to all dashboard cost calculations.
+            Manage cost-per-token rates for each model. Changes apply to all dashboard cost calculations.
           </p>
         </div>
         {/* <button
@@ -80,7 +80,7 @@ export default function ModelPricingConfig() {
               </tr>
             </thead>
             <tbody>
-              {rows.map((row) => {
+              {rows?.length > 0 && rows.map((row) => {
                 const isEditing = editingId === row.id;
                 const r = isEditing && editRow ? editRow : row;
                 return (
@@ -92,14 +92,14 @@ export default function ModelPricingConfig() {
                         <span className="font-semibold text-foreground text-xs">{r.model}</span>
                       )}
                     </td>
-                    <td className="px-4 py-2.5">
+                    {/* <td className="px-4 py-2.5">
                       {isEditing ? (
                         <input className={inputClass} value={r.version} onChange={(e) => setEditRow({ ...r, version: e.target.value })} />
                       ) : (
                         <span className="font-mono text-xs text-foreground">{r.version}</span>
                       )}
-                    </td>
-                    <td className="px-4 py-2.5">
+                    </td> */}
+                    {/* <td className="px-4 py-2.5">
                       {isEditing ? (
                         <select className={inputClass} value={r.tier} onChange={(e) => setEditRow({ ...r, tier: e.target.value })}>
                           {tiers.map((t) => <option key={t}>{t}</option>)}
@@ -110,7 +110,7 @@ export default function ModelPricingConfig() {
                             "bg-muted text-muted-foreground"
                           }`}>{r.tier}</span>
                       )}
-                    </td>
+                    </td> */}
                     <td className="px-4 py-2.5">
                       {isEditing ? (
                         <input className={inputClass} type="number" step="0.0000001" value={r.inputCostPerToken}
@@ -164,11 +164,11 @@ export default function ModelPricingConfig() {
               {addingNew && (
                 <tr className="border-b border-border bg-primary/5">
                   <td className="px-4 py-2.5"><input className={inputClass} placeholder="Model" value={newRow.model} onChange={(e) => setNewRow({ ...newRow, model: e.target.value })} /></td>
-                  <td className="px-4 py-2.5"><input className={inputClass} placeholder="e.g. 3.1" value={newRow.version} onChange={(e) => setNewRow({ ...newRow, version: e.target.value })} /></td>
+                  {/* <td className="px-4 py-2.5"><input className={inputClass} placeholder="e.g. 3.1" value={newRow.version} onChange={(e) => setNewRow({ ...newRow, version: e.target.value })} /></td> */}
                   <td className="px-4 py-2.5">
-                    <select className={inputClass} value={newRow.tier} onChange={(e) => setNewRow({ ...newRow, tier: e.target.value })}>
+                    {/* <select className={inputClass} value={newRow.tier} onChange={(e) => setNewRow({ ...newRow, tier: e.target.value })}>
                       {tiers.map((t) => <option key={t}>{t}</option>)}
-                    </select>
+                    </select> */}
                   </td>
                   <td className="px-4 py-2.5"><input className={inputClass} type="number" step="0.0000001" placeholder="0.0000100" value={newRow.inputCostPerToken || ""} onChange={(e) => setNewRow({ ...newRow, inputCostPerToken: parseFloat(e.target.value) || 0 })} /></td>
                   <td className="px-4 py-2.5"><input className={inputClass} type="number" step="0.0000001" placeholder="0.0000300" value={newRow.outputCostPerToken || ""} onChange={(e) => setNewRow({ ...newRow, outputCostPerToken: parseFloat(e.target.value) || 0 })} /></td>
