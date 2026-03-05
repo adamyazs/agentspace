@@ -1,9 +1,9 @@
 import { TrendingUp, TrendingDown } from "lucide-react";
 import { KPIs } from "@/const/dashboard/execSummaryKPIConst";
 
-export const KPICard = ({ key, title, value, trendValue, subtext }: KPIs) => {
+export const KPICard = ({ keyItem, title, value, trendValue, subtext }: KPIs) => {
     const isPositive = trendValue > 0;
-    const isGood = (key === "avgLatency" || key === "errorRate") ? !isPositive : isPositive;
+    const isGood = (keyItem === "avgLatency" || keyItem === "errorRate") ? !isPositive : isPositive;
 
     return (
         <div className="bg-card border border-border rounded-sm px-5 py-4 flex-1 min-w-[160px]">

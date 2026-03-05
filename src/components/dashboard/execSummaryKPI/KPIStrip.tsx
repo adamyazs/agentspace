@@ -20,7 +20,8 @@ export default function KPIStrip() {
       <div className="flex gap-3 flex-wrap">
         {kpiData.length > 0 && kpiData.map((kpi) => (
           <KPICard
-            key={kpi.key}
+            key={kpi.keyItem}
+            keyItem={kpi.keyItem}
             title={kpi.title}
             value={`${kpi.value.toString() || "N/A"}${kpi.suffix || ""}`}
             trendValue={kpi.trendValue}
