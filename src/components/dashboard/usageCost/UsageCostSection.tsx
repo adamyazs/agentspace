@@ -1,12 +1,12 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip,
   ResponsiveContainer, ReferenceDot,
+  TooltipProps,
 } from "recharts";
-import type { TimeSeriesPoint } from "@/data/mockData";
+import { TOKENS_COST_DATA, TOKEN_TYPE, ALL_TOKEN_KEYS_WITH_LABEL, TimeSeriesPoint, TokenView } from "@/const/dashboard/usageCostConst";
+import { fetchUsageCostData } from "@/api/apiService/dashboard/usageCostData";
 
-
-type TokenView = "input" | "output" | "total";
 
 const SectionCard = ({ title, children }: { title: string; children: React.ReactNode }) => (
   <div className="bg-card border border-border rounded-sm p-5 flex-1 min-w-0">
@@ -19,12 +19,12 @@ const SectionCard = ({ title, children }: { title: string; children: React.React
   </div>
 );
 
-const CustomTooltip = ({ active, payload, label }: any) => {
+const CustomTooltip = ({ active, payload, label }: TooltipProps<number, string>) => {
   if (!active || !payload?.length) return null;
   return (
     <div className="bg-card border border-border rounded-sm px-3 py-2 shadow-md text-xs">
       <p className="font-semibold text-foreground mb-1">{label}</p>
-      {payload.map((p: any) => (
+      {payload.map((p) => (
         <p key={p.dataKey} style={{ color: p.color }} className="font-medium">
           {p.name}: {typeof p.value === "number" ? p.value.toFixed(2) : p.value}
           {p.unit}
@@ -34,19 +34,40 @@ const CustomTooltip = ({ active, payload, label }: any) => {
   );
 };
 
-export default function UsageCostSection({ data, spikeLabel }: { data: TimeSeriesPoint[]; spikeLabel?: string }) {
-  const [tokenView, setTokenView] = useState<TokenView>("total");
+export default function UsageCostSection() {
+  const [tokenCostData, setTokenCostData] = useState<TimeSeriesPoint[]>(TOKENS_COST_DATA);
+  const [tokenView, setTokenView] = useState<TokenView>();
+  const [tokenKey, setTokenKey] = useState<string>();
+  const [tokenLabel, setTokenLabel] = useState<string>();
+  const [spikePoint, setSpikePoint] = useState<TimeSeriesPoint | undefined>(undefined);
 
-  const tokenKey =
-    tokenView === "input" ? "inputTokens" : tokenView === "output" ? "outputTokens" : "totalTokens";
-  const tokenLabel =
-    tokenView === "input" ? "Input Tokens (M)" : tokenView === "output" ? "Output Tokens (M)" : "Total Tokens (M)";
+  const findSpikePoint = (data: TimeSeriesPoint[]) => {
+    const spike = data.reduce((a, b) => (a.cost > b.cost ? a : b));
+    setSpikePoint(spike);
+  }
 
-  // Find spike point — highest cost point, labeled in the UI
-  const spikePoint = spikeLabel
-    ? data.find((d) => d.time === spikeLabel) ?? data.reduce((a, b) => (a.cost > b.cost ? a : b))
-    : data.reduce((a, b) => (a.cost > b.cost ? a : b));
+  const handleTokenViewChange = (view: TokenView) => {
+    setTokenView(view);
+    const findKeyLabel = ALL_TOKEN_KEYS_WITH_LABEL.find((obj) => obj[view]);
+    if (!findKeyLabel) {
+      console.error("No matching key-label pair found for view:", view);
+      return;
+    }
+    const key = findKeyLabel[view].key;
+    setTokenKey(key);
+    const label = findKeyLabel[view].label;
+    setTokenLabel(label);
+  }
 
+  useEffect(() => {
+    const fetchUsageCostDataAsync = async () => {
+      const data = await fetchUsageCostData();
+      setTokenCostData(data);
+      findSpikePoint(data);
+      handleTokenViewChange(TOKEN_TYPE[0]);
+    }
+    fetchUsageCostDataAsync().catch(console.error);
+  }, [])
   return (
     <div className="flex gap-3 flex-col lg:flex-row">
       {/* Token Usage */}
@@ -56,15 +77,14 @@ export default function UsageCostSection({ data, spikeLabel }: { data: TimeSerie
             Token Usage Over Time
           </h3>
           <div className="flex gap-1">
-            {(["input", "output", "total"] as TokenView[]).map((v) => (
+            {TOKEN_TYPE.map((v) => (
               <button
                 key={v}
-                onClick={() => setTokenView(v)}
-                className={`text-[11px] font-semibold px-2.5 py-1 rounded-sm capitalize transition-colors ${
-                  tokenView === v
-                    ? "bg-primary text-primary-foreground"
-                    : "bg-secondary text-muted-foreground hover:text-foreground"
-                }`}
+                onClick={() => handleTokenViewChange(v)}
+                className={`text-[11px] font-semibold px-2.5 py-1 rounded-sm capitalize transition-colors ${tokenView === v
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-secondary text-muted-foreground hover:text-foreground"
+                  }`}
               >
                 {v}
               </button>
@@ -72,7 +92,7 @@ export default function UsageCostSection({ data, spikeLabel }: { data: TimeSerie
           </div>
         </div>
         <ResponsiveContainer width="100%" height={220}>
-          <LineChart data={data} margin={{ top: 4, right: 8, left: -10, bottom: 0 }}>
+          <LineChart data={tokenCostData} margin={{ top: 4, right: 8, left: -10, bottom: 0 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="hsl(220 14% 90%)" />
             <XAxis
               dataKey="time"
@@ -113,7 +133,7 @@ export default function UsageCostSection({ data, spikeLabel }: { data: TimeSerie
           </span>
         </div>
         <ResponsiveContainer width="100%" height={220}>
-          <LineChart data={data} margin={{ top: 4, right: 8, left: -4, bottom: 0 }}>
+          <LineChart data={tokenCostData} margin={{ top: 4, right: 8, left: -4, bottom: 0 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="hsl(220 14% 90%)" />
             <XAxis
               dataKey="time"

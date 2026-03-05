@@ -1,6 +1,6 @@
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import KPIStrip from "@/components/dashboard/execSummaryKPI/KPIStrip";
-import UsageCostSection from "@/components/dashboard/UsageCostSection";
+import UsageCostSection from "@/components/dashboard/usageCost/UsageCostSection";
 import PerformanceSection from "@/components/dashboard/performance/PerformanceSection";
 import RuntimeDistributionPanel from "@/components/dashboard/runtimeDistribution/RuntimeDistributionPanel";
 import AgentTable from "@/components/dashboard/agentInventory/AgentTable";
@@ -27,10 +27,14 @@ export default function DashboardMain({
     selectedRuntimes: string[];
     timeRange: TimeRange;
 }) {
-    const data = useMemo(
-        () => getDashboardData(environment, selectedModels, selectedRuntimes, timeRange),
-        [environment, selectedModels, selectedRuntimes, timeRange]
-    );
+    // const data = useMemo(
+    //     () => getDashboardData(environment, selectedModels, selectedRuntimes, timeRange),
+    //     [environment, selectedModels, selectedRuntimes, timeRange]
+    // );
+
+    // useEffect(()=>{
+    //     console.log("Dashboard data:", data);
+    // },[])
     return (
         <main className="px-6 py-6 max-w-screen-2xl mx-auto space-y-6">
             <div className="flex items-center justify-between flex-wrap gap-3">
@@ -51,7 +55,7 @@ export default function DashboardMain({
             </section>
             <section>
                 <SectionLabel>Usage &amp; Cost</SectionLabel>
-                <UsageCostSection data={data.timeSeries} spikeLabel={data.spikeLabel} />
+                <UsageCostSection />
             </section>
             <section>
                 <SectionLabel>Performance</SectionLabel>
