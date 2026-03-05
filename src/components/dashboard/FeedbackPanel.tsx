@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { MessageSquare } from "lucide-react";
 import { Button } from "@/components/shared/button";
 import { Textarea } from "@/components/shared/textarea";
@@ -11,61 +11,49 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/shared/sheet";
-
-type FeedbackStatus = "Under Review" | "Acknowledged" | "Resolved";
-
-interface FeedbackEntry {
-  id: string;
-  text: string;
-  date: Date;
-  status: FeedbackStatus;
-}
-
-const seedData: FeedbackEntry[] = [
-  {
-    id: "1",
-    text: "Cost breakdown by department would be very useful",
-    date: new Date(Date.now() - 2 * 60 * 60 * 1000),
-    status: "Under Review",
-  },
-  {
-    id: "2",
-    text: "Would like to filter agents by team ownership",
-    date: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
-    status: "Acknowledged",
-  },
-  {
-    id: "3",
-    text: "Latency charts would benefit from a p99 percentile option",
-    date: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000),
-    status: "Resolved",
-  },
-];
-
-const statusStyles: Record<FeedbackStatus, string> = {
-  "Under Review": "bg-amber-100 text-amber-800 border-amber-200",
-  Acknowledged: "bg-blue-100 text-blue-800 border-blue-200",
-  Resolved: "bg-green-100 text-green-800 border-green-200",
-};
+import { FeedbackEntry, STATUS_STYLES } from "@/const/feedbackConst";
+import { fetchFeedbackData } from "@/api/apiService/feedback/getFeedbackData";
+import { sendFeedback } from "@/api/apiService/feedback/sendFeeback";
 
 export default function FeedbackPanel({ triggerClassName }: { triggerClassName?: string }) {
   const [open, setOpen] = useState(false);
-  const [entries, setEntries] = useState<FeedbackEntry[]>(seedData);
+  const [entries, setEntries] = useState<FeedbackEntry[]>();
   const [text, setText] = useState("");
 
   const handleSubmit = () => {
     if (!text.trim()) return;
-    setEntries((prev) => [
-      {
-        id: crypto.randomUUID(),
-        text: text.trim(),
-        date: new Date(),
-        status: "Under Review",
-      },
-      ...prev,
-    ]);
-    setText("");
+    const newFeedbackEntry: FeedbackEntry = {
+      id: crypto.randomUUID(),
+      text: text.trim(),
+      date: new Date(),
+      status: "Under Review",
+    };
+    sendFeedbackAsync(newFeedbackEntry).then(() => {
+      setEntries((prev) => [
+        newFeedbackEntry,
+        ...prev,
+      ]);
+      setText("");
+
+    })
   };
+
+  const sendFeedbackAsync = async (entry: FeedbackEntry) => {
+    try {
+      const data = await sendFeedback(entry);
+      return data;
+    } catch (error) {
+      console.error("Error sending feedback:", error);
+    }
+  }
+
+  useEffect(() => {
+    const fetchFeedbackDataAsync = async () => {
+      const data = await fetchFeedbackData();
+      setEntries(data);
+    }
+    fetchFeedbackDataAsync().catch(console.error);
+  }, []);
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
@@ -98,7 +86,7 @@ export default function FeedbackPanel({ triggerClassName }: { triggerClassName?:
           </p>
           <ScrollArea className="h-[calc(100%-2rem)]">
             <div className="space-y-3 pr-3">
-              {entries.map((entry) => (
+              {entries?.length > 0 && entries.map((entry) => (
                 <div
                   key={entry.id}
                   className="rounded-md border border-border p-3 space-y-1.5"
@@ -109,7 +97,7 @@ export default function FeedbackPanel({ triggerClassName }: { triggerClassName?:
                       {entry.date.toLocaleDateString()}{" "}
                       {entry.date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
                     </span>
-                    <Badge variant="outline" className={statusStyles[entry.status]}>
+                    <Badge variant="outline" className={STATUS_STYLES[entry.status]}>
                       {entry.status}
                     </Badge>
                   </div>
