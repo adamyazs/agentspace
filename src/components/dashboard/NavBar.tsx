@@ -1,27 +1,29 @@
-import FeedbackPanel from "@/components/dashboard/FeedbackPanel";
+import { useMemo } from "react";
 import { getUserRole } from "@/auth/authUser";
+import FeedbackPanel from "@/components/dashboard/FeedbackPanel";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/shared/avatar";
 import { DynamicIcon } from "@/components/shared/DynamicIcon";
-import { SelectField, MultiSelectField, DisabledSelectField } from "@/components/shared/SelectField";
-import { HEADER_NAV_BAR, USER, ALL_ENVIRONMENTS, ALL_AGENT_NAMES, ALL_MODEL_NAMES, ALL_RUNTIMES, ALL_TIME_RANGES, SUB_BAR_SIDE_HEADER, AgentName, Environment, ModelName, Runtime, TimeRange, NavBarProps } from "@/const/navBar";
-import { useMemo } from "react";
+import { SelectField, MultiSelectField, DisplayField } from "@/components/shared/SelectField";
+import { HEADER_NAV_BAR, USER, SUB_BAR_SIDE_HEADER, NavBarProps } from "@/const/navBar";
 
 export default function NavBar({
-  environment, setEnvironment,
-  agentName, setAgentName,
+  environment,
+  selectedAgents, setSelectedAgents,
   selectedModels, setSelectedModels,
   selectedRuntimes, setSelectedRuntimes,
-  timeRange, setTimeRange,
+  selectedTimeRange, setSelectedTimeRange,
   activeTab, setActiveTab,
+  agentsList, modelList,
+  runtimeList, timeRange
 }: NavBarProps) {
   const userRole = useMemo(() => getUserRole(), []);
 
   const subBarItems = [
     { label: "ENV", value: environment },
-    { label: "Agent", value: agentName },
+    { label: "Agent", value: selectedAgents.length === 0 ? "All" : selectedAgents.join(", ") },
     { label: "MODEL", value: selectedModels.length === 0 ? "All" : selectedModels.length <= 2 ? selectedModels.join(", ") : `${selectedModels.length} models` },
     { label: "PLATFORM", value: selectedRuntimes.length === 0 ? "All" : selectedRuntimes.join(", ") },
-    { label: "RANGE", value: timeRange },
+    { label: "RANGE", value: selectedTimeRange },
   ]
 
   return (
@@ -76,36 +78,36 @@ export default function NavBar({
         {/* Right: Filters (only shown on dashboard tab) */}
         {activeTab === "dashboard" && (
           <div className="px-6 pb-3 flex items-center gap-4 flex-wrap">
-            <DisabledSelectField
-              label="Environment"
-              value={environment}
-              options={ALL_ENVIRONMENTS}
+            <DisplayField
+              field={environment}
+              header="Environment"
             />
-            <SelectField
+            <MultiSelectField
               label="Agent Name"
-              value={agentName}
-              options={ALL_AGENT_NAMES}
-              onChange={(v) => setAgentName(v as AgentName)}
+              selected={selectedAgents}
+              options={agentsList}
+              onChange={(v) => setSelectedAgents(v as string[])}
+              allLabel="Agents"
             />
             <MultiSelectField
               label="Model Name"
               selected={selectedModels}
-              options={ALL_MODEL_NAMES}
-              onChange={(v) => setSelectedModels(v as ModelName[])}
-              allLabel="All Models"
+              options={modelList}
+              onChange={(v) => setSelectedModels(v as string[])}
+              allLabel="Models"
             />
             <MultiSelectField
               label="Platform"
               selected={selectedRuntimes}
-              options={ALL_RUNTIMES}
-              onChange={(v) => setSelectedRuntimes(v as Runtime[])}
-              allLabel="All Platforms"
+              options={runtimeList}
+              onChange={(v) => setSelectedRuntimes(v as string[])}
+              allLabel="Platforms"
             />
             <SelectField
               label="Time Range"
-              value={timeRange}
-              options={ALL_TIME_RANGES}
-              onChange={(v) => setTimeRange(v as TimeRange)}
+              value={selectedTimeRange}
+              options={timeRange}
+              onChange={(v) => setSelectedTimeRange(v as string)}
             />
           </div>
         )}

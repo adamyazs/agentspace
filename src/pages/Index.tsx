@@ -1,37 +1,31 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Routes, Route, useNavigate, useLocation } from "react-router-dom";
 import { RoleProtectedRoute } from "@/auth/auth";
 import DashboardMain from "@/components/dashboard/DashBoardMain";
 import NavBar from "@/components/dashboard/NavBar";
 import DocumentationPage from "@/components/docs/DocumentationPage";
 import ModelPricingConfig from "@/components/pricing/ModelPricingConfig";
-import type { Environment, AgentName, ModelName, TimeRange, ActiveTab } from "@/const/navBar";
+import { Environment, ActiveTab, pathToTab, tabToAccess, tabToPath } from "@/const/navBar";
+import { fetchLOVsData } from "@/api/apiService/dashboard/getLOVsdata";
 
 export default function Index() {
-  const [environment, setEnvironment] = useState<Environment>(import.meta.env.VITE_ENVIRONMENT as Environment || "QA");
-  const [agentName, setAgentName] = useState<AgentName>("Gemini 2.0");
-  const [selectedModels, setSelectedModels] = useState<ModelName[]>([]);
+  const [agentsList, setAgentsList] = useState<string[]>([]);
+  const [modelList, setModelList] = useState<string[]>([]);
+  const [runtimeList, setRuntimeList] = useState<string[]>([]);
+  const [timeRange, setTimeRange] = useState<string[]>();
+
+  const [selectedAgents, setSelectedAgents] = useState<string[]>([]);
+  const [selectedModels, setSelectedModels] = useState<string[]>([]);
   const [selectedRuntimes, setSelectedRuntimes] = useState<string[]>([]);
-  const [timeRange, setTimeRange] = useState<TimeRange>("24h");
+  const [selectedTimeRange, setSelectedTimeRange] = useState<string>();
+
+    const [updatedTime,setUpdatedTime] = useState<Date>(new Date());
+
   const location = useLocation();
   const navigate = useNavigate();
-  // Map path to tab
-  const pathToTab: Record<string, ActiveTab> = {
-    "/": "dashboard",
-    "/docs": "docs",
-    "/model-pricing": "pricing",
-  };
-  const tabToPath: Record<ActiveTab, string> = {
-    dashboard: "/",
-    docs: "/docs",
-    pricing: "/model-pricing",
-  };
 
-  const tabToAccess: Record<ActiveTab, string[]> = {
-    dashboard: ["super_user", "user"],
-    docs: ["super_user", "user"],
-    pricing: ["super_user"],
-  };
+  const environment = useMemo(() => import.meta.env.VITE_ENVIRONMENT as Environment || "Dev", []);
+
 
   const [activeTab, setActiveTab] = useState<ActiveTab>(pathToTab[location.pathname] || "dashboard");
 
@@ -51,23 +45,41 @@ export default function Index() {
 
   useEffect(() => {
     // get LOVs for filters if needed, currently hardcoded in consts
+    const fetchLOVsDataAsync = async () => {
+      const data = await fetchLOVsData();
+      setAgentsList(data.agentNames);
+      setModelList(data.modelNames);
+      setRuntimeList(data.runtimes);
+      setTimeRange(data.timeRanges);
+
+      setUpdatedTime(data.updatedTime);
+
+      setSelectedAgents([data.agentNames[0]]);
+      setSelectedModels([data.modelNames[0]]);
+      setSelectedRuntimes([data.runtimes[0]]);
+      setSelectedTimeRange(data.timeRanges[0]);
+    }
+    fetchLOVsDataAsync().catch(console.error);
   }, []);
 
   return (
     <div className="min-h-screen bg-background">
       <NavBar
         environment={environment}
-        setEnvironment={setEnvironment}
-        agentName={agentName}
-        setAgentName={setAgentName}
+        selectedAgents={selectedAgents}
+        setSelectedAgents={setSelectedAgents}
         selectedModels={selectedModels}
         setSelectedModels={setSelectedModels}
         selectedRuntimes={selectedRuntimes}
         setSelectedRuntimes={setSelectedRuntimes}
-        timeRange={timeRange}
-        setTimeRange={setTimeRange}
+        selectedTimeRange={selectedTimeRange}
+        setSelectedTimeRange={setSelectedTimeRange}
         activeTab={activeTab}
         setActiveTab={setActiveTab}
+        agentsList={agentsList}
+        modelList={modelList}
+        runtimeList={runtimeList}
+        timeRange={timeRange}
       />
       <Routes>
         <Route path="/docs" element={
@@ -82,7 +94,7 @@ export default function Index() {
         } />
         <Route path="/" element={
           <RoleProtectedRoute allowedRoles={tabToAccess["dashboard"]}>
-            <DashboardMain environment={environment} selectedModels={selectedModels} selectedRuntimes={selectedRuntimes} timeRange={timeRange} />
+            <DashboardMain environment={environment} selectedModels={selectedModels} selectedAgents={selectedAgents} timeRange={selectedTimeRange} updatedTime={updatedTime} />
           </RoleProtectedRoute>
         } />
       </Routes>

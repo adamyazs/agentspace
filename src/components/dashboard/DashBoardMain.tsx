@@ -4,7 +4,7 @@ import UsageCostSection from "@/components/dashboard/usageCost/UsageCostSection"
 import PerformanceSection from "@/components/dashboard/performance/PerformanceSection";
 import RuntimeDistributionPanel from "@/components/dashboard/runtimeDistribution/RuntimeDistributionPanel";
 import AgentTable from "@/components/dashboard/agentInventory/AgentTable";
-import type { Environment, ModelName, TimeRange } from "@/const/navBar";
+import { Environment } from "@/const/navBar";
 
 const SectionLabel = ({ children }: { children: React.ReactNode }) => (
     <div className="flex items-center gap-3 mb-3">
@@ -17,23 +17,17 @@ const SectionLabel = ({ children }: { children: React.ReactNode }) => (
 
 export default function DashboardMain({
     environment,
+    selectedAgents,
     selectedModels,
-    selectedRuntimes,
     timeRange,
+    updatedTime,
 }: {
     environment: Environment;
-    selectedModels: ModelName[];
-    selectedRuntimes: string[];
-    timeRange: TimeRange;
+    selectedAgents: string[];
+    selectedModels: string[];
+    timeRange: string;
+    updatedTime: Date;
 }) {
-    // const data = useMemo(
-    //     () => getDashboardData(environment, selectedModels, selectedRuntimes, timeRange),
-    //     [environment, selectedModels, selectedRuntimes, timeRange]
-    // );
-
-    // useEffect(()=>{
-    //     console.log("Dashboard data:", data);
-    // },[])
     return (
         <main className="px-6 py-6 max-w-screen-2xl mx-auto space-y-6">
             <div className="flex items-center justify-between flex-wrap gap-3">
@@ -41,10 +35,11 @@ export default function DashboardMain({
                     <h1 className="text-xl font-bold text-foreground tracking-tight">Platform Overview</h1>
                     <p className="text-[12px] text-muted-foreground mt-0.5">
                         Environment: <span className="font-semibold text-foreground">{environment}</span>
+                        {" · "}Agents: <span className="font-semibold text-foreground">{selectedAgents.length === 0 ? "All" : selectedAgents.length}</span>
                         {" · "}Models: <span className="font-semibold text-foreground">{selectedModels.length === 0 ? "All" : selectedModels.length}</span>
                         {" · "}Time Range: <span className="font-semibold text-foreground">{timeRange}</span>
                         {" · "}
-                        <span className="text-muted-foreground">Last updated: {new Date().toLocaleTimeString()}</span>
+                        <span className="text-muted-foreground">Last updated: {updatedTime.toLocaleTimeString()}</span>
                     </p>
                 </div>
             </div>
