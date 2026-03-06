@@ -1,5 +1,5 @@
 import { Navigate } from "react-router-dom";
-import { getUserRole } from "@/auth/auth";
+import { getUserRole } from "@/auth/authUser";
 // Role-based ProtectedRoute
 export function RoleProtectedRoute({ children, allowedRoles }: { children: JSX.Element, allowedRoles: string[] }) {
     const userRole = getUserRole();

@@ -1,5 +1,5 @@
 import FeedbackPanel from "@/components/dashboard/FeedbackPanel";
-import { getUserRole } from "@/auth/auth";
+import { getUserRole } from "@/auth/authUser";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/shared/avatar";
 import { DynamicIcon } from "@/components/shared/DynamicIcon";
 import { SelectField, MultiSelectField, DisabledSelectField } from "@/components/shared/SelectField";
